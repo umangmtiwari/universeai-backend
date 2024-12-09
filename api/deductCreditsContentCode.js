@@ -28,7 +28,10 @@ db.connect(err => {
 });
 
 module.exports = async (req, res) => {
-  const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress; // Get user's IP address
+  // Extract the real client IP address from the 'x-forwarded-for' header
+  const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress)
+  .split(',')[0].trim(); // Get the first IP in the list and trim any spaces
+  
   try {
     const [rows] = await db.promise().query(
       'SELECT credits, timing FROM ip_addresses WHERE ip_address = ?',

@@ -6,8 +6,6 @@ const moment = require('moment');
 
 // Enable CORS for all origins
 app.use(cors());
-// Or restrict CORS to specific origin:
-// app.use(cors({ origin: 'http://localhost:3000' }));
 
 require('dotenv').config();
 
@@ -24,7 +22,9 @@ const pool = mysql.createPool({
 const promisePool = pool.promise(); // Create a promise-based pool
 
 module.exports = async (req, res) => {
-  const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  // Extract the real client IP address from the 'x-forwarded-for' header
+  const ipAddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress)
+    .split(',')[0].trim(); // Get the first IP in the list and trim any spaces
 
   try {
     const [rows] = await promisePool.query(
