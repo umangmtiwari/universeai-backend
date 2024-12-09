@@ -1,16 +1,31 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "server.js",
-        "use": "@vercel/node"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "/server.js"
-      }
-    ]
-  }
-  
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/credits.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/deductCreditsContentCode.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/deductCreditsImage.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/credits",
+      "dest": "/api/credits.js"
+    },
+    {
+      "src": "/api/deductCreditsContentCode",
+      "dest": "/api/deductCreditsContentCode.js"
+    },
+    {
+      "src": "/api/deductCreditsImage",
+      "dest": "/api/deductCreditsImage.js"
+    }
+  ]
+}

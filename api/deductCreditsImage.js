@@ -1,15 +1,22 @@
+const cors = require('cors');
+const express = require('express');
+const app = express();
 const mysql = require('mysql2');
 const moment = require('moment');
 
-// Instead of `mysql.createConnection()`
-const db = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    waitForConnections: true,
-    connectionLimit: 10, // Adjust this as needed
-  });  
+// Enable CORS for all origins
+app.use(cors());
+// Or restrict CORS to specific origin:
+// app.use(cors({ origin: 'http://localhost:3000' }));
+
+require('dotenv').config();
+
+const db = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
+});
 
 db.connect(err => {
   if (err) {
@@ -43,12 +50,12 @@ module.exports = async (req, res) => {
       const diff = moment().diff(lastDeductionTime, 'hours');
 
       if (diff >= 12) {
-        // 12 hours passed, reset credits to 15
+        // 12 hours passed, reset credits to 8 because 15 - 7 = 8
         await db.promise().query(
-          'UPDATE ip_addresses SET credits = 15, timing = ? WHERE ip_address = ?',
+          'UPDATE ip_addresses SET credits = 8, timing = ? WHERE ip_address = ?',
           [moment().toISOString(), ipAddress]
         );
-        return res.status(200).json({ credits: 15 });
+        return res.status(200).json({ credits: 8 });
       } else {
         return res.status(400).json({ message: 'Not enough time has passed to recover credits.' });
       }
